@@ -19,7 +19,6 @@ def main():
         "
     print(opening_ui)
 
-    
     # Handle user input
     input = sys.argv
     input_size = len(input)
@@ -28,15 +27,13 @@ def main():
         print("Correct usage: python .\\task-cli.py [command] [argument 1] [argument 2] etc...\n")
         print_commands()
 
-        
     elif input[1] not in [command.name for command in commands]: # Incorrect command
         print("Invalid command.")
         print_commands()
-
     
-    else:
+    else: # Correct command
         command = [command for command in commands if input[1] == command.name][0]
-        command.execute_command(command, input)
+        command.execute_command(command, input) # Validate arguments and execute command
         
     print()
 
