@@ -47,7 +47,56 @@ class Command:
         self.arg_desc = arg_desc
         self.arg_count = arg_count
 
-    # TODO: Command execution method
+    
+    def execute_command(self, command, input):
+        if  command.name == "add" and \
+            len(input) >= 3:
+                command.add()
+                print("Task has been added.")
+
+        elif command.name == "update" and \
+             len(input) >= 4 and \
+             input[2].isnumeric():
+                command.update()
+                print("Task has been updated.")
+
+        elif command.name == "delete" and \
+             len(input) >= 3 and \
+             input[2].isnumeric():
+                command.delete()
+                print("Task has been deleted.")
+
+        elif command.name == "mark-in-progress" and \
+             len(input) >= 3 and \
+             input[2].isnumeric():
+                command.mark_in_progress()
+                print("Task has been marked in progress.")
+
+        elif command.name == "mark-done" and \
+             len(input) >= 3 and \
+             input[2].isnumeric():
+                command.mark_done()
+                print("Task has been marked done.")
+
+        elif command.name == "list":
+                if len(input) >= 3 and input[2] == "done":
+                    command.list_done()
+                    print("Finished tasks have been displayed.")
+                    
+                elif len(input) >= 3 and input[2] == "todo":
+                    command.list_todo()
+                    print("Todo tasks have been displayed.")
+
+                elif len(input) >= 3 and input[2] == "in-progress":
+                    command.list_in_progress()
+                    print("In progress tasks have been displayed.")
+
+                else:
+                    command.list()
+                    print("All tasks have been displayed.")
+        else:
+            print(f"Invalid arguments, correct usage: {command.name} {command.arg_desc}")
+            print("No changes have been made.")
 
 
 commands = [
