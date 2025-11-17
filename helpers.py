@@ -60,7 +60,18 @@ commands = [
 ]
 
 
-# TODO: Commands printing
+def print_commands():
+    """Displays the list of program commands"""
+    max_key_size = max([len(command.name) for command in commands]) # For alignment
+    
+    # Heading
+    command_to_argument = f"{"command".ljust(max_key_size)}: Arguments"
+    print(command_to_argument)
+    print("-" * len(command_to_argument))
+
+    # Commands
+    for command in commands:
+        print(f"{command.name.ljust(max_key_size)}: {command.arg_desc}")
 
 
 def helper():
