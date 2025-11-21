@@ -9,7 +9,8 @@ from helpers import *
 
 def main():
     """Main program flow"""
-    ...
+    retrieve_tasks()
+
     # Print the opening user interface
     opening_ui = "\n\
         \rA great day to manage some tasks out eh?\n\
@@ -33,7 +34,50 @@ def main():
         command = [command for command in commands if input[1] == command.name][0]
         command.execute_command(command, input) # Validate arguments and execute command
         
+    store_tasks()
+
     print()
+
+
+
+# TODO: Retrieve tasks from database
+def retrieve_tasks():
+    file_name = "tasks.csv"
+    fieldnames = ["id", "description", "status", "createdAt", "updatedAt"]
+    
+    with open(file_name, mode="r") as file:
+        reader = csv.DictReader(file, fieldnames=fieldnames)
+        
+        next(reader)
+
+        for row in reader:
+            tasks.append(Task(
+                row["id"],
+                row["description"],
+                row["status"],
+                row["createdAt"],
+                row["updatedAt"]
+            ))
+
+
+# TODO: Store tasks to database
+def store_tasks():
+    file_name = "tasks.csv"
+    fieldnames = ["id", "description", "status", "createdAt", "updatedAt"]
+    
+    with open(file_name, mode="w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        writer.writeheader()
+
+        for task in tasks:
+            writer.writerow({
+                "id": task.id,
+                "description": task.description,
+                "status": task.status,
+                "createdAt": task.createdAt,
+                "updatedAt": task.updatedAt
+            })
 
 
 if __name__ == "__main__":

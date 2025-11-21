@@ -1,9 +1,10 @@
 """
 Self-implemented helper classes, variables and functions
 """
+import csv
+import datetime
 import sys
 import time
-import datetime
 
 
 class Task:
@@ -35,8 +36,6 @@ class Task:
     #      return self._updatedAt
     
 
-    # TODO: Retrieve tasks from file
-
     def add(self):
         print("add command executed.")
 
@@ -66,9 +65,7 @@ class Task:
 
 
 tasks = [
-     Task(0, "Hey", "todo", "today", "today"),
-     Task(1, "Hey", "todo", "today", "today"),
-     Task(2, "Hey", "todo", "today", "today"),
+     
 ]
 
 
@@ -97,15 +94,19 @@ class Command:
                 #       tasks[0]._updatedAt,
                 #       sep="\n"
                 #       )
-                print(f"Task added successfully (ID: {len(tasks)})")
+                print(f"Task added successfully (ID: {len(tasks) - 1})")
 
         elif command.name == "update" and \
              len(input) >= 4 and \
-             input[2].isnumeric() and int(input[2]) <= len(tasks) - 1:
-                # TODO: update()
-                tasks[int(input[2])].description = input[3]
-                
-                print(f"Task updated successfully (ID: {input[2]})")
+             input[2].isnumeric():
+                if int(input[2]) > len(tasks) - 1: # Invalid task number
+                    print("Invalid task number.")
+                    print("No changes have been made.")
+                else: # Valid task number
+                    tasks[int(input[2])].description = input[3]
+                    tasks[int(input[2])].updatedAt = datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
+
+                    print(f"Task updated successfully (ID: {input[2]})")
 
         elif command.name == "delete" and \
              len(input) >= 3 and \
