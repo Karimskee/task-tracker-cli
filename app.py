@@ -47,10 +47,11 @@ def retrieve_tasks():
     
     with open(file_name, mode="r") as file:
         reader = csv.DictReader(file, fieldnames=fieldnames)
-        
-        next(reader)
 
         for row in reader:
+            if row["id"] == "id": # Skip header row
+                continue
+
             tasks.append(Task(
                 row["id"],
                 row["description"],
