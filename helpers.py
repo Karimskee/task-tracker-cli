@@ -154,19 +154,57 @@ class Command:
 
         elif command.name == "list":
                 if len(input) >= 3 and input[2] == "done":
-                    # TODO: list_done()
+                    if len(tasks) == 0:
+                         print("No tasks to display")
+                    else:
+                         for task in tasks:
+                            if task.status == "done":
+                                print(
+                                     f"Task #{task.id}",
+                                     f"Description: {task.description}",
+                                     f"Status: {task.status}",
+                                     f"Created At: {task.createdAt}",
+                                     f"Updated At: {task.updatedAt}",
+                                     "",
+                                     sep="\n"
+                                )
                     print("Finished tasks have been displayed.")
                     
                 elif len(input) >= 3 and input[2] == "todo":
-                    # TODO: list_todo()
+                    if len(tasks) == 0:
+                         print("No tasks to display")
+                    else:
+                         for task in tasks:
+                            if task.status == "todo":
+                                print(
+                                     f"Task #{task.id}",
+                                     f"Description: {task.description}",
+                                     f"Status: {task.status}",
+                                     f"Created At: {task.createdAt}",
+                                     f"Updated At: {task.updatedAt}",
+                                     "",
+                                     sep="\n"
+                                )
                     print("Todo tasks have been displayed.")
 
                 elif len(input) >= 3 and input[2] == "in-progress":
-                    # TODO: list_in_progress()
+                    if len(tasks) == 0:
+                         print("No tasks to display")
+                    else:
+                         for task in tasks:
+                            if task.status == "in-progress":
+                                print(
+                                     f"Task #{task.id}",
+                                     f"Description: {task.description}",
+                                     f"Status: {task.status}",
+                                     f"Created At: {task.createdAt}",
+                                     f"Updated At: {task.updatedAt}",
+                                     "",
+                                     sep="\n"
+                                )
                     print("In progress tasks have been displayed.")
 
                 else:
-                    # TODO: list()
                     if len(tasks) == 0:
                          print("No tasks to display")
                     else:
