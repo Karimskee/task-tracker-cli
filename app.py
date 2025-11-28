@@ -5,14 +5,77 @@ currently working on. This project will help you practice your programming skill
 with the filesystem, handling user inputs, and building a simple CLI application.
 """
 from helpers import *
-import sys
-import time
 
 
 def main():
     """Main program flow"""
-    # TODO: Inputting logic
-    ...
+    retrieve_tasks()
+
+    # Print the opening user interface
+    opening_ui = "\n\
+        \rA great day to manage some tasks out eh?\n\
+        \r========================================\n\
+        "
+    print(opening_ui)
+
+    # Handle user input
+    input = sys.argv
+    input_size = len(input)
+
+    if input_size <= 1: # Incorrect usage
+        print("Correct usage: python .\\task-cli.py [command] [argument 1] [argument 2] etc...\n")
+        print_commands()
+
+    elif input[1] not in [command.name for command in commands]: # Incorrect command
+        print("Invalid command.")
+        print_commands()
+    
+    else: # Correct command
+        command = [command for command in commands if input[1] == command.name][0]
+        command.execute_command(command, input) # Validate arguments and execute command
+        
+    store_tasks()
+
+    print()
+
+
+def retrieve_tasks():
+    file_name = "tasks.csv"
+    fieldnames = ["id", "description", "status", "createdAt", "updatedAt"]
+    
+    with open(file_name, mode="r") as file:
+        reader = csv.DictReader(file, fieldnames=fieldnames)
+
+        for row in reader:
+            if row["id"] == "id": # Skip header row
+                continue
+
+            tasks.append(Task(
+                row["id"],
+                row["description"],
+                row["status"],
+                row["createdAt"],
+                row["updatedAt"]
+            ))
+
+
+def store_tasks():
+    file_name = "tasks.csv"
+    fieldnames = ["id", "description", "status", "createdAt", "updatedAt"]
+    
+    with open(file_name, mode="w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        writer.writeheader()
+
+        for task in tasks:
+            writer.writerow({
+                "id": task.id,
+                "description": task.description,
+                "status": task.status,
+                "createdAt": task.createdAt,
+                "updatedAt": task.updatedAt
+            })
 
 
 if __name__ == "__main__":
