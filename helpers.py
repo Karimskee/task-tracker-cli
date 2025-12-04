@@ -40,7 +40,7 @@ class Command:
         name (str): Name of the command
         arg_desc (str): Description of the command's arguments
         """
-        self.name, self.arg_desc, = name, arg_desc
+        self.name, self.arg_desc = name, arg_desc
 
     def execute_command(self, command, prompt):
         """
