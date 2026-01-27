@@ -5,7 +5,7 @@ currently working on. This project will help you practice your programming skill
 with the filesystem, handling user inputs, and building a simple CLI application.
 """
 
-import csv
+import json
 import sys
 from helpers import commands, print_commands, Task, tasks
 
@@ -26,7 +26,7 @@ A great day to manage some tasks out eh?
     prompt = sys.argv
     input_size = len(prompt)
 
-    if input_size <= 1:  # Incorrect usage
+    if input_size <= 1: # Incorrect usage
 
         print(
             "Correct usage: python .\\task-cli.py [command] [argument 1] [argument 2] etc...\n"
@@ -38,72 +38,52 @@ A great day to manage some tasks out eh?
         print("Invalid command.\n")
         print_commands()
 
-    else:  # Correct command
+    else:   # Correct command
 
         command = [command for command in commands if prompt[1] == command.name][0]
         command.execute_command(
             command, prompt
-        )  # Validate arguments and execute command
+        )   # Validate arguments and execute command
 
     store_tasks()
     print()
 
 
-def retrieve_tasks():
-    """
-    Retrieves tasks from a CSV file and stores them in the tasks list.
-
-    Opens a CSV file named "tasks.csv" in read mode and reads the header and all tasks from it.
-    The CSV file is then closed and the tasks are stored.
-    """
-    file_name = "tasks.csv"
-    fieldnames = ["id", "description", "status", "created_at", "updated_at"]
-
-    with open(file_name, mode="r", encoding="utf-8") as file:
-
-        reader = csv.DictReader(file, fieldnames=fieldnames)
-
-        for row in reader:
-
-            if row["id"] == "id":  # Skip header row
-                continue
-
-            tasks.append(
-                Task(
-                    row["id"],
-                    row["description"],
-                    row["status"],
-                    row["created_at"],
-                    row["updated_at"],
-                )
-            )
-
-
 def store_tasks():
     """
-    Store tasks to a CSV file.
-
-    Opens a CSV file named "tasks.csv" in write mode and writes the header and all tasks to it.
-    The CSV file is then closed and the tasks are stored.
+    Stores the tasks list in a JSON file named "tasks.json".
+    
+    The file is opened in write mode and the tasks list is written to it in JSON format.
+    The tasks list is converted to a list of dictionaries using the __dict__ method of each Task object.
+    The indent parameter of json.dump is set to 4 to format the JSON output with indentation.
     """
-    file_name = "tasks.csv"
-    fieldnames = ["id", "description", "status", "created_at", "updated_at"]
+    # help(tasks[0].user_id)
+    # print(tasks[0].description)
+    file_name = "tasks.json"
 
-    with open(file_name, mode="w", newline="", encoding="utf-8") as file:
+    with open(file_name, mode="w", encoding="utf-8") as file:
+        json.dump(obj=[task.__dict__ for task in tasks], fp=file, indent=4)
+        file.write("\n")
 
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
+def retrieve_tasks():
+    """
+    Retrieves the tasks from a JSON file named "tasks.json" and stores them in the tasks list.
 
-        for task in tasks:
-            writer.writerow(
-                {
-                    "id": task.user_id,
-                    "description": task.description,
-                    "status": task.status,
-                    "created_at": task.created_at,
-                    "updated_at": task.updated_at,
-                }
-            )
+    The file is opened in read mode and the tasks list is read from it in JSON format.
+    The tasks list is converted from a list of dictionaries to a list of Task objects using the ** operator.
+    If the file does not exist or is empty, the tasks list is not modified.
+    If the file contains invalid JSON, a JSONDecodeError is caught and the tasks list is not modified.
+    """
+    global tasks
+    file_name = "tasks.json"
+
+    with open(file_name, mode="r", encoding="utf-8") as file:
+        try:
+            tasks_dict = json.load(file)
+        except json.JSONDecodeError:
+            pass
+        else:
+            tasks += [Task(**task) for task in tasks_dict]
 
 
 if __name__ == "__main__":

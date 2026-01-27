@@ -31,7 +31,7 @@ tasks = []
 
 class Command:
     """For executing commands at the run time."""
-
+    # FIXME Use a better approach
     def __init__(self, name, arg_desc):
         """
         Initialize a Command object with the given parameters.
@@ -187,6 +187,7 @@ class Command:
                             "",
                             sep="\n",
                         )
+                # FIXME This gets dislayed even if there are no tasks
                 print("All tasks have been displayed.")
         else:
             print(
