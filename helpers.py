@@ -119,7 +119,7 @@ class Command:
                 )
 
                 print(f"Task made in progress successfully (ID: {prompt[2]})")
-            print("Task has been marked done.")
+                print("Task has been marked done.")
 
         elif command.name == "list":
             if len(prompt) >= 3 and prompt[2] == "done":
@@ -137,7 +137,8 @@ class Command:
                                 "",
                                 sep="\n",
                             )
-                print("Finished tasks have been displayed.")
+
+                    print("Finished tasks have been displayed.")
 
             elif len(prompt) >= 3 and prompt[2] == "todo":
                 if len(tasks) == 0:
@@ -154,7 +155,8 @@ class Command:
                                 "",
                                 sep="\n",
                             )
-                print("Todo tasks have been displayed.")
+
+                    print("Todo tasks have been displayed.")
 
             elif len(prompt) >= 3 and prompt[2] == "in-progress":
                 if len(tasks) == 0:
@@ -171,7 +173,8 @@ class Command:
                                 "",
                                 sep="\n",
                             )
-                print("In progress tasks have been displayed.")
+
+                    print("In progress tasks have been displayed.")
 
             else:
                 if len(tasks) == 0:
@@ -187,8 +190,8 @@ class Command:
                             "",
                             sep="\n",
                         )
-                # FIXME This gets dislayed even if there are no tasks
-                print("All tasks have been displayed.")
+                        
+                    print("All tasks have been displayed.")
         else:
             print(
                 f"Invalid arguments, correct usage: {command.name} {command.arg_desc}"
