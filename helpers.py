@@ -5,28 +5,71 @@ Self-implemented helper classes, variables and functions
 import datetime
 
 
-class Task:
-    """For managing tasks at the run time."""
-
-    def __init__(self, user_id, description, status, created_at, updated_at):
-        """
-        Initialize a Task object with the given parameters.
-
-        Parameters:
-        id (int): ID of the task
-        description (str): Description of the task
-        status (str): Status of the task, either "todo", "in-progress", or "done"
-        created_at (str): Timestamp when the task was created
-        updated_at (str): Timestamp when the task was last updated
-        """
-        self.user_id = user_id
-        self.description = description
-        self.status = status
-        self.created_at = created_at
-        self.updated_at = updated_at
-
-
 tasks = []
+TASK_TEMPLATE = {
+    "task_id": int(),
+    "description": str(),
+    "status": "todo",
+    "created_at": str(),
+    "updated_at": str(),
+}
+
+def add_task(cmd : dict, args : str):
+    print("added task")
+
+
+def update_task(cmd : dict, args : str):
+    print("updated task")
+
+
+def delete_task(cmd : dict, args : str):
+    print("deleted task")
+
+
+def mark_in_progress(cmd : dict, args : str):
+    print("mark in progress task")
+
+
+def mark_done(cmd : dict, args : str):
+    print("marked done task")
+
+
+def list_done(cmd : dict, args : str):
+    print("listed done task")
+
+
+def list_todo(cmd : dict, args : str):
+    print("listed todo task")
+
+
+def list_in_progress(cmd : dict, args : str):
+    print("listed in progress task")
+
+
+def list_all(cmd : dict, args : str):
+    print("listed all task")
+
+
+commands = [
+    {"name": "add", "runner": add_task, "description": "<task description>"},
+    {"name": "update", "runner": update_task, "description": "<task number> <task description>"},
+    {"name": "delete", "runner": delete_task, "description": "<task number>"},
+    {"name": "mark-in-progress", "runner": mark_in_progress, "description": "<task number>"},
+    {"name": "mark-done", "runner": mark_done, "description": "<task number>"},
+    {"name": "list done", "runner": list_done, "description": ""},
+    {"name": "list todo", "runner": list_todo, "description": ""},
+    {"name": "list in-progress", "runner": list_in_progress, "description": ""},
+    {"name": "list", "runner": list_all, "description": ""},
+]
+
+
+def execute_command(prompt : str):
+    matching_cmds = [cmd for cmd in commands if prompt.startswith(cmd["name"])]
+
+    cmd_to_execute = matching_cmds[0]
+    args = prompt.removeprefix(cmd_to_execute["name"])
+    cmd_to_execute["runner"](cmd=cmd_to_execute, args=args.strip())
+
 
 
 class Command:
@@ -51,17 +94,17 @@ class Command:
         input (list): List of arguments to be passed to the command
         """
         if command.name == "add" and len(prompt) >= 3:
-            tasks.append(
-                Task(
-                    len(tasks),
-                    " ".join(prompt[2:]),
-                    "todo",
-                    datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
-                    datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
-                )
-            )
+            task = TASK_TEMPLATE.copy()
 
-            print(f"Task added successfully (ID: {len(tasks) - 1})")
+            task["task_id"] = len(tasks),
+            task["description"] = " ".join(prompt[2:]),
+            task["status"] = "todo",
+            task["created_at"] = datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
+            task["updated_at"] = datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
+
+            tasks.append(task)
+
+            print(f"Task added successfully (ID: {task["task_id"]})")
 
         elif command.name == "update" and len(prompt) >= 4 and prompt[2].isnumeric():
             if int(prompt[2]) > len(tasks) - 1:  # Invalid task number
@@ -69,8 +112,8 @@ class Command:
                 print("No changes have been made.")
 
             else:  # Valid task number
-                tasks[int(prompt[2])].description = " ".join(prompt[3:])
-                tasks[int(prompt[2])].updated_at = datetime.datetime.now().strftime(
+                tasks[int(prompt[2])]["description"] = " ".join(prompt[3:])
+                tasks[int(prompt[2])]["updated_at"] = datetime.datetime.now().strftime(
                     "%d-%m-%Y, %H:%M:%S"
                 )
 
@@ -199,28 +242,20 @@ class Command:
             print("No changes have been made.")
 
 
-commands = [
-    Command("add", "<Task description>"),
-    Command("update", "<Task number> <Task description>"),
-    Command("delete", "<Task number>"),
-    Command("mark-in-progress", "<Task number>"),
-    Command("mark-done", "<Task number>"),
-    Command("list", "(optionaldone / todo / in-progress)"),
-]
-
-
 def print_commands():
     """Displays the list of program commands"""
-    max_key_size = max(len(command.name) for command in commands)  # For alignment
+    max_key_size = max(len(command["name"]) for command in commands)  # For alignment
 
     # Heading
-    command_to_argument = f"{"command".ljust(max_key_size)}: Arguments"
+    command_to_argument = f"Commands and their arguments"
     print(command_to_argument)
     print("-" * len(command_to_argument))
 
     # Notation explanation
-    print("<> -> Required\n() -> Choose none or one\n")
+    print("<> -> Required")
+    # print("() -> Choose none or one")
+    print()
 
     # Commands
     for command in commands:
-        print(f"{command.name.ljust(max_key_size)}: {command.arg_desc}")
+        print(f"{command["name"]} {command["description"]}")

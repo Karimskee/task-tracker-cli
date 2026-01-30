@@ -7,7 +7,7 @@ with the filesystem, handling user inputs, and building a simple CLI application
 
 import json
 import sys
-from helpers import commands, print_commands, Task, tasks
+from helpers import commands, print_commands, tasks, execute_command
 
 
 def main():
@@ -29,21 +29,18 @@ A great day to manage some tasks out eh?
     if input_size <= 1: # Incorrect usage
 
         print(
-            "Correct usage: python .\\task-cli.py [command] [argument 1] [argument 2] etc...\n"
+            "Correct usage: python app.py [command] [argument 1] [argument 2] etc...\n"
         )
         print_commands()
 
-    elif prompt[1] not in [command.name for command in commands]:  # Incorrect command
+    elif prompt[1] not in [command["name"] for command in commands]:  # Incorrect command
 
         print("Invalid command.\n")
         print_commands()
 
     else:   # Correct command
 
-        command = [command for command in commands if prompt[1] == command.name][0]
-        command.execute_command(
-            command, prompt
-        )   # Validate arguments and execute command
+        execute_command(" ".join(prompt[1:])) # Validate arguments and execute command
 
     store_tasks()
     print()
@@ -57,12 +54,10 @@ def store_tasks():
     The tasks list is converted to a list of dictionaries using the __dict__ method of each Task object.
     The indent parameter of json.dump is set to 4 to format the JSON output with indentation.
     """
-    # help(tasks[0].user_id)
-    # print(tasks[0].description)
     file_name = "tasks.json"
 
     with open(file_name, mode="w", encoding="utf-8") as file:
-        json.dump(obj=[task.__dict__ for task in tasks], fp=file, indent=4)
+        json.dump(tasks, fp=file, indent=4)
         file.write("\n")
 
 def retrieve_tasks():
@@ -79,11 +74,11 @@ def retrieve_tasks():
 
     with open(file_name, mode="r", encoding="utf-8") as file:
         try:
-            tasks_dict = json.load(file)
+            task = json.load(file)
         except json.JSONDecodeError:
             pass
         else:
-            tasks += [Task(**task) for task in tasks_dict]
+            tasks += task
 
 
 if __name__ == "__main__":
