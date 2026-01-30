@@ -7,7 +7,7 @@ with the filesystem, handling user inputs, and building a simple CLI application
 
 import json
 import sys
-from helpers import commands, print_commands, tasks
+from helpers import commands, print_commands, tasks, execute_command
 
 
 def main():
@@ -29,21 +29,18 @@ A great day to manage some tasks out eh?
     if input_size <= 1: # Incorrect usage
 
         print(
-            "Correct usage: python .\\task-cli.py [command] [argument 1] [argument 2] etc...\n"
+            "Correct usage: python app.py [command] [argument 1] [argument 2] etc...\n"
         )
         print_commands()
 
-    elif prompt[1] not in [command.name for command in commands]:  # Incorrect command
+    elif prompt[1] not in [command["name"] for command in commands]:  # Incorrect command
 
         print("Invalid command.\n")
         print_commands()
 
     else:   # Correct command
 
-        command = [command for command in commands if prompt[1] == command.name][0]
-        command.execute_command(
-            command, prompt
-        )   # Validate arguments and execute command
+        execute_command(" ".join(prompt[1:])) # Validate arguments and execute command
 
     store_tasks()
     print()
