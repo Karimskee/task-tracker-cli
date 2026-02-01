@@ -5,6 +5,9 @@ Self-implemented helper classes, variables and functions
 import datetime
 
 
+TIME_FORMAT = "%d-%m-%Y, %H:%M:%S"
+
+
 tasks = []
 TASK_TEMPLATE = {
     "task_id": int(),
@@ -15,38 +18,76 @@ TASK_TEMPLATE = {
 }
 
 
+def improper_usage(cmd : dict):
+    print("Improper usage.")
+    print(f"Correct usage: python app.py {cmd["name"]} {cmd["args"]}")
+
+
+def print_task(task : dict):
+    print(f"Task ID: {task['task_id']}")
+    print(f"Task description: {task['description']}")
+    print(f"Task status: {task['status']}")
+    print(f"Task created at: {task['created_at']}")
+    print(f"Task updated at: {task['updated_at']}")
+
+
 def add_task(cmd : dict, args : str):
-    # Incorrect command usage
     """Adds a task to the tasks list"""
+    # Incorrect command usage
     if not args:
-        print("Improper usage.")
-        print(f"Correct usage: python app.py {cmd["name"]} {cmd["args"]}")
+        improper_usage(cmd)
 
         return False
+    
     # Correct command usage
-    else:
-        # Create task
-        task = TASK_TEMPLATE.copy()
+    ## Create task
+    task = TASK_TEMPLATE.copy()
 
-        task["task_id"] = len(tasks)
-        task["description"] = args
-        task["status"] = "todo"
-        task["created_at"] = datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
-        task["updated_at"] = datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
+    task["task_id"] = len(tasks)
+    task["description"] = args
+    task["status"] = "todo"
+    task["created_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
+    task["updated_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
 
-        tasks.append(task)
+    tasks.append(task)
 
-        # Print task details
-        print(f"Task added successfully.")
-        print(f"Task ID: {task["task_id"]}")
-        print(f"Task description: {task["description"]}")
+    # Print task details
+    print(f"Task added successfully.")
+    print_task(task)
 
-        return True
+    return True
 
 
 def update_task(cmd : dict, args : str):
-    print("updated task")
+    """Updates an existing task in the tasks list"""
+    # Validate arguments
+    ## Convert args to a list
+    
+    
+    args_list = args.split()
+    
+    if (not args_list or len(args) < 2 or not args_list[0].isnumeric()):
+        improper_usage(cmd)
 
+        return False
+    
+    ## Validate task number
+    if int(args_list[0]) >= len(tasks):
+        print("Invalid task number.")
+
+        return False
+
+    # Update task details
+    task = tasks[int(args_list[0])]
+
+    task["description"] = " ".join(args_list[1:])
+    task["updated_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
+
+    # Print task details
+    print(f"Task updated successfully.")
+    print_task(task)
+
+    return True
 
 def delete_task(cmd : dict, args : str):
     print("deleted task")
@@ -126,7 +167,7 @@ class Command:
             else:  # Valid task number
                 tasks[int(prompt[2])]["description"] = " ".join(prompt[3:])
                 tasks[int(prompt[2])]["updated_at"] = datetime.datetime.now().strftime(
-                    "%d-%m-%Y, %H:%M:%S"
+                    TIME_FORMAT
                 )
 
                 print(f"Task updated successfully (ID: {prompt[2]})")
@@ -157,7 +198,7 @@ class Command:
             else:  # Valid task number
                 tasks[int(prompt[2])].status = "in-progress"
                 tasks[int(prompt[2])].updated_at = datetime.datetime.now().strftime(
-                    "%d-%m-%Y, %H:%M:%S"
+                    TIME_FORMAT
                 )
 
                 print(f"Task made in progress successfully (ID: {prompt[2]})")
@@ -170,7 +211,7 @@ class Command:
             else:  # Valid task number
                 tasks[int(prompt[2])].status = "done"
                 tasks[int(prompt[2])].updated_at = datetime.datetime.now().strftime(
-                    "%d-%m-%Y, %H:%M:%S"
+                    TIME_FORMAT
                 )
 
                 print(f"Task made in progress successfully (ID: {prompt[2]})")
