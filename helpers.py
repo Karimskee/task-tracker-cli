@@ -62,8 +62,6 @@ def update_task(cmd : dict, args : str):
     """Updates an existing task in the tasks list"""
     # Validate arguments
     ## Convert args to a list
-    
-    
     args_list = args.split()
     
     if (not args_list or len(args) < 2 or not args_list[0].isnumeric()):
@@ -90,7 +88,40 @@ def update_task(cmd : dict, args : str):
     return True
 
 def delete_task(cmd : dict, args : str):
-    print("deleted task")
+    # Validate arguments
+    ## Convert args to a list
+    args_list = args.split()
+
+    if (len(args) < 1 or not args_list[0].isnumeric()):
+        improper_usage(cmd)
+
+        return False
+    
+    ## Validate task number
+    ### If tasks list is empty
+    if (not tasks):
+        print("No tasks to delete.")
+
+        return False
+    
+    ### If task number is invalid
+    if int(args_list[0]) >= len(tasks):
+        print("Invalid task number.")
+
+        return False
+    
+    # Delete task
+    task = tasks.pop(int(args_list[0]))
+
+    # Reassign IDs (so they always start from 0 and increment up to len(tasks) - 1)
+    for i, task in enumerate(tasks):
+        task["task_id"] = i
+
+    # Print task details
+    print(f"Task deleted successfully.")
+    print_task(task)
+
+    return True
 
 
 def mark_in_progress(cmd : dict, args : str):
