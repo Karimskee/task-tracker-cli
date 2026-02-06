@@ -23,8 +23,9 @@ def improper_usage(cmd: dict):
     print(f"Correct usage: python app.py {cmd["name"]} {cmd["args"]}")
 
 
-def print_task(task: dict):
+def print_task(task: dict, cmd: dict):
     """Prints a task to the console."""
+    print(f"Task {cmd["name"]} successfully.")
     print(f"Task ID: {task['task_id']}")
     print(f"Task description: {task['description']}")
     print(f"Task status: {task['status']}")
@@ -32,20 +33,54 @@ def print_task(task: dict):
     print(f"Task updated at: {task['updated_at']}")
 
 
-def add_task(cmd: dict, args: str):
-    """Adds a task to the tasks list"""
-    # Incorrect command usage
-    if not args:
-        improper_usage(cmd)
+def is_valid_arguments(cmd: dict, args: list, required_args_types: list) -> int:
+    """Validates the arguments of a command."""
+    required_args_num = len(required_args_types)    # Number of required arguments
 
+    # Incorrect number of arguments
+    if len(args) < required_args_num:
+        improper_usage(cmd)
+        return 1    # Incorrect number of arguments
+    
+    # Incorrect argument types
+    args_types = [int if arg.isnumeric() else type(arg) for arg in args[:required_args_num]]
+
+    print(required_args_types)
+    print(args_types)
+
+    # # For each required argument
+    for i in range(required_args_num):
+        if required_args_types[i] == any:   # No specific argument type
+            continue
+
+        if required_args_types[i] != args_types[i]: # Incorrect argument type
+            improper_usage(cmd)
+            return 2    # Incorrect argument type
+
+    # If empty tasks list
+    if args_types[0] == int and not tasks:
+        print(f"No tasks to {cmd["name"]}.")
+        return 3    # No tasks
+
+    # Incorrect task number
+    if args_types[0] == int and int(args[0]) >= len(tasks):
+        print("Invalid task number.")
+        return 4    # Invalid task number (task number is greater than the number of tasks)
+
+    return 0
+
+
+def add_task(cmd: dict, args: list):
+    """Adds a task to the tasks list"""
+    # Validate arguments
+    if is_valid_arguments(cmd, args, [any]) != 0:
         return False
 
-    # Correct command usage
-    # # Create task
+    # Create task
     task = TASK_TEMPLATE.copy()
 
     task["task_id"] = len(tasks)
-    task["description"] = args
+    task["description"] = " ".join(args)
     task["status"] = "todo"
     task["created_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
     task["updated_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
@@ -53,76 +88,46 @@ def add_task(cmd: dict, args: str):
     tasks.append(task)
 
     # Print task details
-    print("Task added successfully.")
-    print_task(task)
+    print_task(task, cmd)
 
     return True
 
 
-def update_task(cmd: dict, args: str):
+def update_task(cmd: dict, args: list):
     """Updates an existing task in the tasks list"""
     # Validate arguments
     # # Convert args to a list
-    args_list = args.split()
-
-    if not args_list or len(args) < 2 or not args_list[0].isnumeric():
-        improper_usage(cmd)
-
-        return False
-
-    # # Validate task number
-    if int(args_list[0]) >= len(tasks):
-        print("Invalid task number.")
-
+    if is_valid_arguments(cmd, args, [int, any]) != 0:
         return False
 
     # Update task details
-    task = tasks[int(args_list[0])]
+    task = tasks[int(args[0])]
 
-    task["description"] = " ".join(args_list[1:])
+    task["description"] = " ".join(args[1:])
     task["updated_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
 
     # Print task details
-    print("Task updated successfully.")
-    print_task(task)
+    print_task(task, cmd)
 
     return True
 
 
-def delete_task(cmd: dict, args: str):
+def delete_task(cmd: dict, args: list):
     """Deletes an existing task from the tasks list."""
     # Validate arguments
     # # Convert args to a list
-    args_list = args.split()
-
-    if len(args) < 1 or not args_list[0].isnumeric():
-        improper_usage(cmd)
-
-        return False
-
-    # # Validate task number
-    # # # If tasks list is empty
-    if not tasks:
-        print("No tasks to delete.")
-
-        return False
-
-    # # # If task number is invalid
-    if int(args_list[0]) >= len(tasks):
-        print("Invalid task number.")
-
+    if is_valid_arguments(cmd, args, [int]) != 0:
         return False
 
     # Delete task
-    task = tasks.pop(int(args_list[0]))
+    deleted_task = tasks.pop(int(args[0]))
 
     # Reassign IDs (so they always start from 0 and increment up to len(tasks) - 1)
     for i, task in enumerate(tasks):
         task["task_id"] = i
 
     # Print task details
-    print("Task deleted successfully.")
-    print_task(task)
+    print_task(deleted_task, cmd)
 
     return True
 
@@ -168,13 +173,14 @@ commands = [
 ]
 
 
+# REFACTOR pass arguments as a list
 def execute_command(prompt: str):
     """Execute a command based on the given prompt."""
     matching_cmds = [cmd for cmd in commands if prompt.startswith(cmd["name"])]
 
     cmd_to_execute = matching_cmds[0]
     args = prompt.removeprefix(cmd_to_execute["name"])
-    cmd_to_execute["runner"](cmd=cmd_to_execute, args=args.strip())
+    cmd_to_execute["runner"](cmd=cmd_to_execute, args=args.split())
 
 
 # class Command:
