@@ -35,34 +35,40 @@ def print_task(task: dict, cmd: dict):
 
 def is_valid_arguments(cmd: dict, args: list, required_args_types: list) -> int:
     """Validates the arguments of a command."""
-    required_args_num = len(required_args_types)    # Number of required arguments
+    required_args_num = len(required_args_types)  # Number of required arguments
 
     # Incorrect number of arguments
     if len(args) < required_args_num:
         improper_usage(cmd)
-        return 1    # Incorrect number of arguments
-    
+        return 1  # Incorrect number of arguments
+
     # Incorrect argument types
-    args_types = [int if arg.isnumeric() else type(arg) for arg in args[:required_args_num]]
+    args_types = [
+        int if arg.isnumeric() else type(arg) for arg in args[:required_args_num]
+    ]
 
     # # For each required argument
     for i in range(required_args_num):
-        if required_args_types[i] == any:   # No specific argument type
+        if required_args_types[i] == any:  # No specific argument type
             continue
 
-        if required_args_types[i] != args_types[i]: # Incorrect argument type
+        if required_args_types[i] != args_types[i]:  # Incorrect argument type
             improper_usage(cmd)
-            return 2    # Incorrect argument type
+            return 2  # Incorrect argument type
 
     # If empty tasks list
     if int in args_types and not tasks:
         print(f"No tasks to {cmd["name"]}.")
-        return 3    # No tasks
+        return 3  # No tasks
 
     # Incorrect task number
-    if int in args_types and int([arg for arg in args if arg.isnumeric()][0]) >= len(tasks):
+    if int in args_types and int([arg for arg in args if arg.isnumeric()][0]) >= len(
+        tasks
+    ):
         print("Invalid task number.")
-        return 4    # Invalid task number (task number is greater than the number of tasks)
+        return (
+            4  # Invalid task number (task number is greater than the number of tasks)
+        )
 
     return 0
 
@@ -128,11 +134,20 @@ def delete_task(cmd: dict, args: list):
 
 
 def mark(cmd: dict, args: list):
-    
+    """
+    Marks a task as either "in-progress" or "done".
+
+    Parameters:
+    cmd (dict): A dictionary containing the command name and its arguments.
+    args (list): A list of arguments passed to the command.
+
+    Returns:
+    bool: True if the task was marked successfully, False otherwise.
+    """
     # Validate arguments
     if is_valid_arguments(cmd, args, [str, int]) != 0:
         return False
-    
+
     # Validate status
     status = args[0]
 
@@ -171,7 +186,11 @@ def mark(cmd: dict, args: list):
 
 commands = [
     {"name": "add", "runner": add_task, "args": "<task description>"},
-    {"name": "update", "runner": update_task, "args": "<task number> <task description>"},
+    {
+        "name": "update",
+        "runner": update_task,
+        "args": "<task number> <task description>",
+    },
     {"name": "delete", "runner": delete_task, "args": "<task number>"},
     {"name": "mark", "runner": mark, "args": "<in-progress/done> <task number>"},
     # {"name": "list done", "runner": list_done, "args": ""},
