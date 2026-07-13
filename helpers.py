@@ -65,9 +65,8 @@ def is_valid_arguments(cmd: dict, args: list, required_args_types: list) -> int:
         return 3  # No tasks
 
     # Incorrect task number
-    if int in args_types and int([arg for arg in args if arg.isnumeric()][0]) >= len(
-        tasks
-    ):
+    task_id = int([arg for arg in args if arg.isnumeric()][0]) # First numeric argument
+    if int in args_types and task_id > len(tasks) or task_id < 1:
         print("Invalid task number.")
         return (
             4  # Invalid task number (task number is greater than the number of tasks)
@@ -106,7 +105,7 @@ def update_task(cmd: dict, args: list) -> bool:
         return False
 
     # Update task details
-    task = tasks[int(args[0])]
+    task = tasks[int(args[0]) - 1]
 
     task["description"] = " ".join(args[1:])
     task["updated_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
@@ -151,7 +150,7 @@ def mark(cmd: dict, args: list) -> bool:
         return False
 
     # Update task details
-    task = tasks[int(args[1])]
+    task = tasks[int(args[1]) - 1]
 
     task["status"] = status
     task["updated_at"] = datetime.datetime.now().strftime(TIME_FORMAT)
