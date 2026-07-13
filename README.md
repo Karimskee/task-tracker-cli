@@ -33,7 +33,7 @@
 
 **Disclaimer:** This project is for learning purposes only. It is a standard, easy project built to be submitted to [roadmap.sh](https://roadmap.sh/).
 
-**Project Link:** [https://github.com/Karimskee/task-tracker-cli](https://github.com/Karimskee/task-tracker-cli)
+**roadmap.sh project:** [https://roadmap.sh/projects/task-tracker](https://roadmap.sh/projects/task-tracker)
 
 CLI Task Tracker is a lightweight, pure-Python command-line application to manage your daily tasks. Data is stored locally in a simple JSON file, making it completely portable and easy to use.
 
